@@ -1,0 +1,5 @@
+.container { max-width: 1100px; margin-left: auto; margin-right: auto; }
+.job-card { transition: box-shadow .12s ease; }
+.job-card:hover { box-shadow: 0 6px 18px rgba(15,23,42,0.08); transform: translateY(-2px); }
+.modal-open { display: flex !important; }
+.avatar-thumb { width:64px;height:64px;border-radius:9999px;object-fit:cover; }

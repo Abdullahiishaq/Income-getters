@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Income getters — Earn a legal and sustainable income</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body class="bg-gray-50 text-gray-800">
+  <header class="bg-white shadow">
+    <div class="container mx-auto px-4 py-4 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <div class="w-12 h-12 rounded-full bg-green-600 flex items-center justify-center">
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+            <path d="M3 12C3 7.03 7.03 3 12 3s9 4.03 9 9-4.03 9-9 9S3 16.97 3 12z" fill="white"/>
+            <path d="M8.5 12.5c0-2.485 2.015-4.5 4.5-4.5S17.5 10.015 17.5 12.5 15.485 17 13 17s-4.5-2.015-4.5-4.5z" fill="#34D399"/>
+          </svg>
+        </div>
+        <div>
+          <h1 class="text-xl font-semibold">Income getters</h1>
+          <p class="text-sm text-gray-500">Earn a legal and sustainable income</p>
+        </div>
+      </div>
+      <div class="flex items-center space-x-3">
+        <input id="searchInput" type="search" placeholder="Search jobs or skills..." class="border rounded px-3 py-2 w-64" />
+        <button id="postJobBtn" class="bg-green-600 text-white px-4 py-2 rounded">Post a Job</button>
+        <button id="signinBtn" class="border rounded px-4 py-2">Sign in / Register</button>
+        <button id="profileBtn" class="border rounded px-4 py-2 hidden">Profile</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container mx-auto px-4 py-8">
+    <section class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <aside class="md:col-span-1 bg-white p-4 rounded shadow">
+        <h2 class="font-semibold mb-3">Filters</h2>
+        <label class="block mb-2 text-sm">Category</label>
+        <select id="categoryFilter" class="w-full border rounded px-2 py-1">
+          <option value="">All</option>
+          <option>Design</option>
+          <option>Development</option>
+          <option>Writing</option>
+          <option>Marketing</option>
+        </select>
+
+        <label class="block mt-4 mb-2 text-sm">Type</label>
+        <select id="typeFilter" class="w-full border rounded px-2 py-1">
+          <option value="">Any</option>
+          <option>Hourly</option>
+          <option>Fixed</option>
+        </select>
+
+        <label class="block mt-4 mb-2 text-sm">Location</label>
+        <input id="locationFilter" class="w-full border rounded px-2 py-1" placeholder="Remote or city"/>
+      </aside>
+
+      <div class="md:col-span-2">
+        <div id="stats" class="mb-4 text-sm text-gray-600">Showing <span id="count">0</span> jobs</div>
+        <div id="jobsContainer" class="space-y-4"></div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Post Job Modal -->
+  <div id="postJobModal" class="fixed inset-0 bg-black bg-opacity-40 hidden items-center justify-center p-4">
+    <div class="bg-white rounded shadow-lg w-full max-w-2xl p-6">
+      <h3 class="text-lg font-semibold mb-3">Post a Job</h3>
+      <form id="postJobForm" class="space-y-3" enctype="multipart/form-data">
+        <div>
+          <label class="block text-sm">Title</label>
+          <input name="title" required class="w-full border rounded px-2 py-1"/>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-sm">Category</label>
+            <select name="category" required class="w-full border rounded px-2 py-1">
+              <option>Design</option><option>Development</option><option>Writing</option><option>Marketing</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm">Type</label>
+            <select name="type" required class="w-full border rounded px-2 py-1">
+              <option>Fixed</option><option>Hourly</option>
+            </select>
+          </div>
+        </div>
+        <div>
+          <label class="block text-sm">Location</label>
+          <input name="location" class="w-full border rounded px-2 py-1" placeholder="Remote or city"/>
+        </div>
+        <div>
+          <label class="block text-sm">Budget (e.g. $500 or $25/hr)</label>
+          <input name="budget" class="w-full border rounded px-2 py-1"/>
+        </div>
+        <div>
+          <label class="block text-sm">Skills (comma separated)</label>
+          <input name="skills" class="w-full border rounded px-2 py-1" placeholder="React,Node" />
+        </div>
+        <div>
+          <label class="block text-sm">Attachment (optional)</label>
+          <input type="file" name="attachment" />
+        </div>
+        <div>
+          <label class="block text-sm">Description</label>
+          <textarea name="description" rows="6" class="w-full border rounded px-2 py-1"></textarea>
+        </div>
+        <div class="flex justify-between items-center">
+          <div class="text-xs text-gray-500">Only authenticated accounts can post jobs. Freelancers must complete profile.</div>
+          <div class="flex justify-end space-x-2">
+            <button type="button" id="closePostJob" class="px-4 py-2 border rounded">Cancel</button>
+            <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded">Publish</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Auth/Profile Modal (combined) -->
+  <div id="authModal" class="fixed inset-0 bg-black bg-opacity-40 hidden items-center justify-center p-4">
+    <div class="bg-white rounded shadow-lg w-full max-w-2xl p-6 max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-semibold">Account</h3>
+        <button id="closeAuth" class="text-gray-500">Close ×</button>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <h4 class="font-semibold mb-2">Sign in</h4>
+          <form id="loginForm">
+            <label class="text-sm">Email</label>
+            <input id="loginEmail" type="email" class="w-full border rounded px-2 py-1" />
+            <label class="text-sm mt-2">Password</label>
+            <input id="loginPassword" type="password" class="w-full border rounded px-2 py-1" />
+            <div class="mt-3 flex space-x-2">
+              <button id="doLogin" class="px-4 py-2 bg-green-600 text-white rounded">Log in</button>
+              <button id="showRegister" type="button" class="px-4 py-2 border rounded">Register</button>
+            </div>
+          </form>
+        </div>
+
+        <div>
+          <h4 class="font-semibold mb-2">Create account</h4>
+          <form id="registerForm">
+            <label class="text-sm">Full name</label>
+            <input id="regName" class="w-full border rounded px-2 py-1" />
+            <label class="text-sm mt-2">Email</label>
+            <input id="regEmail" class="w-full border rounded px-2 py-1" />
+            <label class="text-sm mt-2">Password</label>
+            <input id="regPassword" type="password" class="w-full border rounded px-2 py-1" />
+            <label class="text-sm mt-2">Role</label>
+            <select id="regRole" class="w-full border rounded px-2 py-1">
+              <option value="freelancer">Freelancer (Job seeker)</option>
+              <option value="employer">Employer (Client)</option>
+            </select>
+            <div class="mt-3 flex justify-between">
+              <button id="doRegister" class="px-4 py-2 bg-green-600 text-white rounded">Create account</button>
+              <button id="openProfile" type="button" class="px-4 py-2 border rounded">Complete Profile</button>
+            </div>
+        </div>
+      </div>
+
+      <hr class="my-4" />
+      <div>
+        <h4 class="font-semibold mb-2">Profile (Freelancers)</h4>
+        <form id="profileForm" class="grid grid-cols-1 md:grid-cols-2 gap-3" enctype="multipart/form-data">
+          <div>
+            <label class="text-sm">Headline / Title</label>
+            <input name="title" id="pfTitle" class="w-full border rounded px-2 py-1" placeholder="e.g. Senior React Developer" />
+            <label class="text-sm mt-2">Skills (comma separated)</label>
+            <input name="skills" id="pfSkills" class="w-full border rounded px-2 py-1" placeholder="React,Node,SQL" />
+            <label class="text-sm mt-2">Bio</label>
+            <textarea name="bio" id="pfBio" class="w-full border rounded px-2 py-1" rows="4"></textarea>
+          </div>
+          <div>
+            <label class="text-sm">Profile picture (jpg/png, max 2MB)</label>
+            <input id="pfAvatar" type="file" accept="image/*" />
+            <img id="avatarPreview" class="mt-2 avatar-thumb hidden" alt="avatar preview" />
+            <label class="text-sm mt-2">Upload CV (PDF, max 5MB)</label>
+            <input id="pfCv" type="file" accept="application/pdf" />
+            <div class="mt-4 flex justify-between">
+              <button id="saveProfile" class="px-4 py-2 bg-green-600 text-white rounded">Save Profile</button>
+              <button id="logoutBtn" class="px-4 py-2 border rounded">Log out</button>
+            </div>
+          </div>
+        </form>
+      </div>
+
+    </div>
+  </div>
+
+
+  <footer class="bg-white border-t mt-8">
+    <div class="container mx-auto px-4 py-6 text-center text-gray-600">
+      © Income getters — Earn a legal and sustainable income.
+    </div>
+  </footer>
+
+  <script src="/static/app_client_v4.js"></script>
+</body>
+</html>
